@@ -16,13 +16,17 @@ int main()
     int nodeTop = -1;
     int countTop = -1;
 
-    // 노드 정보
+    // 트리 정보
     int total = 0;
     int depth = 0;
     int height = 0;
     int treeDegree = 0;
 
+    // 각 노드가 자식을 가지고 있는지 확인
     int hasChild[26] = { 0 };
+
+    // 중복 노드 검사
+    int used[26] = { 0 };
 
     // C의 부모와 자식
     char parentOfC = '\0';
@@ -31,25 +35,30 @@ int main()
 
     // 입력
     printf("트리를 입력하세요: ");
-    if (!fgets(input, MAX, stdin)) return 1;
-    input[strcspn(input, "\n")] = '\0';   // [수정] 개행 제거
+
+    if (!fgets(input, MAX, stdin))
+        return 1;
+
+    // 개행 제거
+    input[strcspn(input, "\n")] = '\0';
 
     int len = strlen(input);
 
-    // 다음에 노드가 와야 하는지 여부
+    // 다음에 노드가 와야 하는지
     int expectNode = 1;
 
     // 가장 최근에 읽은 노드
     char lastNode = '\0';
 
+    // 트리 입력 검사 및 정보 계산
     for (int i = 0; i < len; i++)
     {
         char ch = input[i];
 
-        /* --------------------
+        /* ====================
            노드
-           -------------------- */
-        if (isupper(ch))
+           ==================== */
+        if (isupper((unsigned char)ch))
         {
             // 노드가 와야 하는 상황이 아니면 오류
             if (!expectNode)
@@ -58,35 +67,41 @@ int main()
                 return 1;
             }
 
-            // [수정] "등장 순서 = 알파벳 순서" 검사는 삭제.
-            // 예: A(B(E,F),C,D(G)) 처럼 실제 등장 순서(A,B,E,F,C,D,G)가
-            // 알파벳 순서와 다른 정상적인 트리도 있으므로, 대문자인지만 확인한다.
-
+            // 노드는 A~Z까지만 사용
             if (total >= 26)
             {
-                printf("Error: 노드는 최대 26개입니다.\n");
+                printf("Error: 노드는 최대 26개까지 사용할 수 있습니다.\n");
                 return 1;
             }
 
-            // 부모가 존재하면
+            // 중복 노드 검사
+            if (used[ch - 'A'])
+            {
+                printf("Error: 중복된 노드가 있습니다.\n");
+                return 1;
+            }
+
+            used[ch - 'A'] = 1;
+
+            // 부모가 존재하는 경우
             if (nodeTop >= 0)
             {
-                // 현재 노드의 부모
                 char parent = nodeStack[nodeTop];
 
+                // 부모가 자식을 가지고 있음
                 hasChild[parent - 'A'] = 1;
 
                 // 부모의 자식 수 증가
                 countStack[countTop]++;
 
-                // C의 직접 자식인지 확인
+                // 현재 노드가 C의 직접 자식인지 확인
                 if (parent == 'C')
                 {
                     childrenOfC[cChildCount++] = ch;
                 }
             }
 
-            // C의 부모 저장
+            // 현재 노드가 C라면 부모 저장
             if (ch == 'C' && nodeTop >= 0)
             {
                 parentOfC = nodeStack[nodeTop];
@@ -94,21 +109,23 @@ int main()
 
             total++;
 
-            // [수정] 현재 노드 자신의 깊이(= 지금까지 열린 괄호 수 + 1)로 높이 계산
-            // 기존 코드는 '(' 를 만나기 전에 depth를 체크해서 1씩 작게 나오는 버그가 있었음
-            if (depth + 1 > height)
-                height = depth + 1;
+            // 현재 노드의 높이는 현재 depth
+            // 루트의 높이 = 0
+            if (depth > height)
+            {
+                height = depth;
+            }
 
             lastNode = ch;
             expectNode = 0;
         }
 
-        /* --------------------
+        /* ====================
            '('
-           -------------------- */
+           ==================== */
         else if (ch == '(')
         {
-            // 반드시 노드 다음에 와야 함
+            // 반드시 노드 바로 다음에 와야 함
             if (expectNode || lastNode == '\0')
             {
                 printf("Error: 잘못된 '(' 위치입니다.\n");
@@ -118,17 +135,22 @@ int main()
             // 현재 노드를 부모 스택에 저장
             nodeStack[++nodeTop] = lastNode;
 
-            // 이 부모의 자식 수를 0으로 시작
+            // 부모의 자식 수를 0으로 시작
             countStack[++countTop] = 0;
 
+            // 한 단계 아래로 내려감
             depth++;
 
+            // 다음에는 자식 노드가 와야 함
             expectNode = 1;
+
+            // '(' 이후에는 바로 새로운 '('가 올 수 없음
+            lastNode = '\0';
         }
 
-        /* --------------------
+        /* ====================
            ','
-           -------------------- */
+           ==================== */
         else if (ch == ',')
         {
             // 괄호 안에서만 가능
@@ -140,14 +162,17 @@ int main()
 
             // 다음에는 새로운 노드가 와야 함
             expectNode = 1;
+
+            lastNode = '\0';
         }
 
-        /* --------------------
+        /* ====================
            ')'
-           -------------------- */
+           ==================== */
         else if (ch == ')')
         {
-            // 괄호가 열려 있어야 함
+            // 열린 괄호가 없거나
+            // 아직 자식 노드를 기다리는 상태면 오류
             if (countTop < 0 || expectNode)
             {
                 printf("Error: 잘못된 ')' 위치입니다.\n");
@@ -156,28 +181,36 @@ int main()
 
             // 현재 부모의 자식 수로 차수 계산
             if (countStack[countTop] > treeDegree)
+            {
                 treeDegree = countStack[countTop];
+            }
 
-            // 스택에서 제거
+            // 자식 수 스택 제거
             countTop--;
+
+            // 부모 스택 제거
             nodeTop--;
 
+            // 한 단계 위로 올라감
             depth--;
 
             expectNode = 0;
+
+            // ')' 뒤에는 새로운 '('가 바로 올 수 없음
+            lastNode = '\0';
         }
 
-        /* --------------------
-           공백 (무시)
-           -------------------- */
+        /* ====================
+           공백
+           ==================== */
         else if (isspace((unsigned char)ch))
         {
             continue;
         }
 
-        /* --------------------
+        /* ====================
            그 외 문자
-           -------------------- */
+           ==================== */
         else
         {
             printf("Error: 허용되지 않는 문자가 있습니다.\n");
@@ -185,11 +218,19 @@ int main()
         }
     }
 
-    /* --------------------
+    /* ====================
        최종 형식 검사
-       -------------------- */
+       ==================== */
 
-       // 마지막에 노드를 기다리는 상태면 오류
+       // 입력이 비어 있는 경우
+    if (total == 0)
+    {
+        printf("Error: 트리가 비어 있습니다.\n");
+        return 1;
+    }
+
+    // 마지막에 노드를 기다리고 있으면 오류
+    // 예: A(B,C,
     if (expectNode)
     {
         printf("Error: 잘못된 트리 형식입니다.\n");
@@ -203,31 +244,27 @@ int main()
         return 1;
     }
 
-    // 노드가 하나도 없으면 오류
-    if (total == 0)
-    {
-        printf("Error: 트리가 비어 있습니다.\n");
-        return 1;
-    }
-
-    /* --------------------
-       리프 / 비리프 계산
-       -------------------- */
+    /* ====================
+       단말 / 비단말 노드 계산
+       ==================== */
 
     int leaf = 0;
     int nonLeaf = 0;
 
-    for (int i = 0; i < total; i++)
+    for (int i = 0; i < 26; i++)
     {
+        if (!used[i])
+            continue;
+
         if (hasChild[i])
             nonLeaf++;
         else
             leaf++;
     }
 
-    /* --------------------
+    /* ====================
        결과 출력
-       -------------------- */
+       ==================== */
 
     printf("\n===== 트리 정보 =====\n");
 
@@ -253,14 +290,16 @@ int main()
     else
     {
         for (int i = 0; i < cChildCount; i++)
+        {
             printf("%c ", childrenOfC[i]);
+        }
 
         printf("\n");
     }
 
-    /* --------------------
+    /* ====================
        계층적 트리 출력
-       -------------------- */
+       ==================== */
 
     printf("\n===== 트리 구조 =====\n");
 
@@ -270,17 +309,21 @@ int main()
     {
         char ch = input[i];
 
-        if (isupper(ch))
+        if (isupper((unsigned char)ch))
         {
-            // 현재 깊이만큼 들여쓰기
+            // 루트
             if (depth == 0)
             {
                 printf("%c\n", ch);
             }
             else
             {
+                // 직접 자식은 들여쓰기 0칸
+                // 손자부터 4칸씩 추가
                 for (int j = 0; j < depth - 1; j++)
+                {
                     printf("    ");
+                }
 
                 printf("+---%c\n", ch);
             }
