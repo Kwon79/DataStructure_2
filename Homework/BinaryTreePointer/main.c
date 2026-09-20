@@ -87,7 +87,8 @@ int main()
         }
     }
 
-
+    printf("포인터 구현 메모리 사용량 : %zu bytes\n",
+        sizeof(Node) * countNodes(root));
     /*
         동적 할당한 메모리 해제
     */
