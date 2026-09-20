@@ -57,6 +57,7 @@ int main()
     // 형제
     printSibling(&tree, target);
 
+    printf("배열 메모리 사용량: %zu bytes\n", sizeof(tree.tree));
 
     return 0;
 }
