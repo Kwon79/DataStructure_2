@@ -36,7 +36,7 @@ BNode* find_node(BTree* tree, const char* path)
     if (path[1] == '\0')
         return NULL;
 
-    /* 첫 번째 노드는 반드시 루트 */
+    /* 첫 번째 노드는 루트 */
     if (path[1] != tree->root->data)
         return NULL;
 
@@ -58,8 +58,8 @@ BNode* find_node(BTree* tree, const char* path)
 
         /*
             같은 부모의 왼쪽과 오른쪽 자식은
-            같은 데이터를 가질 수 없기 때문에
-            데이터만으로 어느 자식인지 구분 가능
+            같은 데이터를 가질 수 없으므로
+            데이터만으로 자식 구분 가능
         */
 
         if (current->left != NULL &&
@@ -99,7 +99,7 @@ BNode* find_parent(BTree* tree, const char* path)
     if (path[1] == '\0')
         return NULL;
 
-    /* 루트 노드는 부모가 없음 */
+    /* 루트는 부모가 없음 */
     if (path[2] == '\0')
         return NULL;
 
@@ -120,8 +120,8 @@ BNode* find_parent(BTree* tree, const char* path)
             return NULL;
 
         /*
-            현재 path[i]가 마지막 데이터라면
-            current가 그 노드의 부모
+            현재 문자가 마지막이면
+            current가 부모
         */
         if (path[i + 1] == '\0')
             return current;
@@ -149,12 +149,9 @@ BNode* find_parent(BTree* tree, const char* path)
 
 
 /* 빈 이진트리 생성 */
-BTree* create_btree(int size)
+BTree* create_btree(void)
 {
     BTree* tree;
-
-    if (size <= 0)
-        return NULL;
 
     tree = (BTree*)malloc(sizeof(BTree));
 
@@ -163,7 +160,6 @@ BTree* create_btree(int size)
 
     tree->root = NULL;
     tree->size = 0;
-    tree->capacity = size;
 
     return tree;
 }
@@ -179,9 +175,7 @@ int insert_root(BTree* tree, char value)
     if (tree->root != NULL)
         return 0;
 
-    if (tree->size >= tree->capacity)
-        return 0;
-
+    /* 영문 대문자인지 확인 */
     if (value < 'A' || value > 'Z')
         return 0;
 
@@ -201,7 +195,7 @@ int insert_root(BTree* tree, char value)
 
     조건:
     1. 부모가 존재해야 함
-    2. 부모의 자식은 최대 2개
+    2. 부모의 자식이 2개보다 적어야 함
     3. 지정한 L/R 위치가 비어 있어야 함
     4. 같은 부모의 다른 자식과 데이터가 같으면 안 됨
 */
@@ -220,13 +214,14 @@ int insert_child(BTree* tree, const char* parent,
     if (value < 'A' || value > 'Z')
         return 0;
 
+    /* 부모 찾기 */
     parentNode = find_node(tree, parent);
 
     if (parentNode == NULL)
         return 0;
 
     /*
-        지정한 위치에 이미 자식이 있으면 추가 불가능
+        지정한 위치에 이미 자식이 있으면 실패
     */
     if (child == 'L' && parentNode->left != NULL)
         return 0;
@@ -241,18 +236,22 @@ int insert_child(BTree* tree, const char* parent,
     {
         if (parentNode->right != NULL &&
             parentNode->right->data == value)
+        {
             return 0;
+        }
     }
     else
     {
         if (parentNode->left != NULL &&
             parentNode->left->data == value)
+        {
             return 0;
+        }
     }
 
-    if (tree->size >= tree->capacity)
-        return 0;
-
+    /*
+        필요한 순간에 노드 하나를 동적으로 할당
+    */
     newNode = create_node(value);
 
     if (newNode == NULL)
@@ -288,7 +287,9 @@ int delete_node(BTree* tree, const char* path)
     */
     if (target->left != NULL ||
         target->right != NULL)
+    {
         return 0;
+    }
 
     /*
         루트가 단말 노드인 경우
@@ -347,7 +348,7 @@ int update_value(BTree* tree, const char* path, char value)
 
     /*
         루트는 부모가 없으므로
-        다른 자식과의 중복 검사 필요 없음
+        형제 중복 검사 필요 없음
     */
     if (target == tree->root)
     {
@@ -368,13 +369,17 @@ int update_value(BTree* tree, const char* path, char value)
     {
         if (parent->right != NULL &&
             parent->right->data == value)
+        {
             return 0;
+        }
     }
     else if (parent->right == target)
     {
         if (parent->left != NULL &&
             parent->left->data == value)
+        {
             return 0;
+        }
     }
     else
     {

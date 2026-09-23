@@ -5,16 +5,16 @@ typedef struct BNode
     struct BNode* right;
 } BNode;
 
+
 typedef struct
 {
     BNode* root;
     int size;
-    int capacity;
 } BTree;
 
 
 /* 트리 생성 */
-BTree* create_btree(int size);
+BTree* create_btree(void);
 
 /* 루트 삽입 */
 int insert_root(BTree* tree, char value);

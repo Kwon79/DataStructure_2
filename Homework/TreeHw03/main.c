@@ -1,11 +1,8 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "BTree.h"
-
-#define MAX_INPUT 200
 
 
 /* 명령어 확인 */
@@ -58,10 +55,7 @@ int is_valid_path(const char* path)
     if (path[0] != '/')
         return 0;
 
-    /*
-        "/" 자체는 경로로 사용할 수 있지만
-        실제 노드 경로로 사용할 때는 별도로 검사
-    */
+    /* "/" 자체는 빈 트리의 루트 생성에서 사용 */
     if (path[1] == '\0')
         return 1;
 
@@ -93,13 +87,12 @@ int is_valid_path(const char* path)
 int main(void)
 {
     BTree* tree;
-    char input[MAX_INPUT];
+    char input[200];
 
     /*
-        최대 100개의 노드를 저장할 수 있는
-        빈 이진트리 생성
+        트리 자체도 필요한 만큼 동적으로 생성
     */
-    tree = create_btree(100);
+    tree = create_btree();
 
     if (tree == NULL)
     {
@@ -107,6 +100,8 @@ int main(void)
         return 1;
     }
 
+
+    /* 명령어 안내 */
     printf("====================================\n");
     printf("       이진트리 조작 프로그램\n");
     printf("====================================\n");
@@ -123,6 +118,7 @@ int main(void)
     printf("※ 명령어는 첫 글자만 입력해도 됩니다.\n");
     printf("  예: I /A L B, D /A/B, P\n");
     printf("====================================\n\n");
+
 
     while (1)
     {
@@ -141,6 +137,7 @@ int main(void)
 
         if (strlen(input) == 0)
             continue;
+
 
         command = strtok(input, " \t");
         arg1 = strtok(NULL, " \t");
@@ -181,9 +178,14 @@ int main(void)
                 }
 
                 if (insert_root(tree, arg2[0]))
-                    printf("루트 노드 %c가 생성되었습니다.\n", arg2[0]);
+                {
+                    printf("루트 노드 %c가 생성되었습니다.\n",
+                        arg2[0]);
+                }
                 else
+                {
                     printf("오류: 루트 노드를 생성할 수 없습니다.\n");
+                }
 
                 continue;
             }
@@ -231,9 +233,13 @@ int main(void)
                 continue;
             }
 
-            if (insert_child(tree, arg1, arg2[0], arg3[0]))
+            if (insert_child(tree,
+                arg1,
+                arg2[0],
+                arg3[0]))
             {
-                printf("노드 %c가 추가되었습니다.\n", arg3[0]);
+                printf("노드 %c가 추가되었습니다.\n",
+                    arg3[0]);
             }
             else
             {
@@ -368,6 +374,8 @@ int main(void)
         printf("오류: 잘못된 명령어입니다.\n");
     }
 
+
+    /* 프로그램 종료 전 모든 메모리 해제 */
     destroy_btree(tree);
 
     return 0;
