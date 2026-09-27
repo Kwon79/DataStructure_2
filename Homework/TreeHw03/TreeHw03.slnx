@@ -3,5 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="TreeHw03.vcxproj" />
+  <Project Path="../TreeHw04/TreeHw04.vcxproj" Id="d6af4c13-bd0a-4cb4-844b-a82ab47d0a2c" />
+  <Project Path="TreeHw03.vcxproj" Id="efeb9f84-335b-4aff-9fd9-474b7bf21198" />
 </Solution>
