@@ -19,7 +19,7 @@ int main() {
 	Node* root = NULL;
 	int buildCount = 0;
 
-	for (int i = 0; i < MAX_VALUE;) {
+	for (int i = 0; i < DATA_COUNT;) {
 		int v = rand() % (MAX_VALUE + 1);
 		if (used[v]) continue;
 		used[v] = 1;
