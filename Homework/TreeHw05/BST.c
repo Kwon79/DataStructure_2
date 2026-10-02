@@ -12,37 +12,28 @@ Node* createTree(int data) {
 	return tree;
 }
 
-Node* insertBST(Node* root, int data,int *count) {
+Node* insertBST(Node* root, int data, int* count) {
 	if (root == NULL) return createTree(data);
-	Node* cur = root;
-	while (1) {
-		(*count)++;
-		if (data < cur->data) {
-			if (cur->left == NULL) { cur->left = createTree(data); break; }
-			cur = cur->left;
-		}
-		else {
-			if (cur->right == NULL) {
-				cur->right = createTree(data);
-				break;
-			}
-			cur = cur->right;
-		}
-	}
+	(*count)++;                                   // 기존 노드와 비교할 때마다 +1
+	if (data < root->data)
+		root->left = insertBST(root->left, data, count);
+	else
+		root->right = insertBST(root->right, data, count);
 	return root;
 }
 
 int searchBST(Node* root, int data, int* found) {
-	int cnt = 0;
-	*found = 0;
-	Node* cur = root;
-	while (cur != NULL) {
-		cnt++;
-		if (data == cur->data) { *found = 1;break; }
-		else if (data < cur->data) cur = cur->left;
-		else cur = cur->right;
+	if (root == NULL) {          // 더 내려갈 노드 없음 -> 실패
+		*found = 0;
+		return 0;
 	}
-	return cnt;
+	if (data == root->data) {    // 찾음 -> 성공
+		*found = 1;
+		return 1;
+	}
+	if (data < root->data)
+		return 1 + searchBST(root->left, data, found);
+	return 1 + searchBST(root->right, data, found);
 }
 
 int sequentialSearch(int* arr, int size, int data, int* found) {
