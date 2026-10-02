@@ -46,6 +46,18 @@ int searchBST(Node* root, int data, int* found) {
 }
 
 int sequentialSearch(int* arr, int size, int data, int* found) {
+	int cnt = 0;
+	*found = 0;
+	for (int i = 0;i < size;i++) {
+		cnt++;
+		if (arr[i] == data) { *found = 1;break; }
 
+	}
+	return cnt;
 }
-void destroyTree(Node* root)
+void destroyTree(Node* root) {
+	if (!root)return;
+	destroyTree(root->left);
+	destroyTree(root->right);
+	free(root);
+}
