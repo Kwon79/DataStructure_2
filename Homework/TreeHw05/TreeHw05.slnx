@@ -3,6 +3,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="../Graph_HW7/Graph_HW7.vcxproj" Id="ae44dffb-84a3-4fe6-9ea1-cb1433a22e2b" />
   <Project Path="../TreeHw06/TreeHw06.vcxproj" Id="85bbf38c-222e-403d-9212-2f033f77b8fd" />
   <Project Path="TreeHw05.vcxproj" Id="fd007377-566f-4a32-8ec0-73ed317dd4df" />
 </Solution>
