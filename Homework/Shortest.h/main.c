@@ -14,7 +14,7 @@ int main(void)
     /* 실행할 때마다 다른 랜덤 그래프가 나오도록 시드 설정 */
     srand((unsigned int)time(NULL));
 
-    /* 1) 그래프 생성: 연결 그래프인지 확인하고, 연결되지 않았다면 다시 만든다.
+    /* 1) 그래프 생성: 연결 그래프인지 확인하고, 연결되지 않았다면 다시 만든다. 
      *    (createEdges가 연결을 보장하지만 과제 조건에 따라 한 번 더 확인한다) */
     do {
         createEdges(edges, EDGE_COUNT);
