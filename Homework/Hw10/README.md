@@ -10,9 +10,6 @@
 | `sort.c` | 정렬 알고리즘 구현, 난수/검증 유틸, 실험 및 출력 |
 | `main.c` | `run_all_experiments()` 호출 |
 
-- 개발 환경: Visual Studio, C언어, **Release / x64** 로 실행 (Debug는 최적화가 없어 수 분 이상 걸림)
-- 난수는 xorshift32를 사용하고 시드를 고정했기 때문에, 몇 번을 실행해도 같은 결과가 나온다.
-
 ## 1. 실험 방법
 
 **데이터.** `(key1, key2, order)` 구조체 10,000개를 사용했다. key1, key2는 0~1,000,000 범위에서 독립적으로 뽑은 난수이고, `order`는 원래 입력 순번이다. `order`는 정렬 기준이 아니라 **안정성 검증을 위해서만** 저장했다.
@@ -37,6 +34,12 @@
 | 삽입 정렬 | 2,497,189,306 | 24,971,893.06 | 24,981,901.16 |
 
 ### 결과 해석
+<img width="732" height="912" alt="image" src="https://github.com/user-attachments/assets/ef7d7896-7e74-4782-840a-e1d28b6f3eb2" />
+<img width="556" height="637" alt="image" src="https://github.com/user-attachments/assets/b747e0f4-bbe3-40db-9c9e-5f2e6bb5fce3" />
+<img width="513" height="647" alt="image" src="https://github.com/user-attachments/assets/b9fe731d-88b7-4532-b0b8-4ea9c316e5fb" />
+<img width="621" height="632" alt="image" src="https://github.com/user-attachments/assets/d6a6786a-3365-4c82-885b-0ae29374b559" />
+<img width="1365" height="687" alt="image" src="https://github.com/user-attachments/assets/3d24edae-5b90-4987-a3af-44caac55e3db" />
+<img width="734" height="225" alt="image" src="https://github.com/user-attachments/assets/45911972-6cba-444c-8f55-1da330c2c78a" />
 
 **선택 정렬과 버블 정렬의 비교 횟수는 정확히 n(n-1)/2 = 49,995,000회**이다. 두 알고리즘은 입력 값과 상관없이 정해진 범위를 항상 끝까지 훑기 때문이다. 선택 정렬은 최솟값을 찾으려고 남은 구간 전체를 매번 비교하고, 일반 버블 정렬은 순회마다 정해진 길이만큼 인접 비교를 한다.
 
