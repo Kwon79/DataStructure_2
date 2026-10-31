@@ -4,6 +4,7 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="../Hw10/Hw10.vcxproj" Id="d93a0db3-e348-4eb4-9a75-1dd3db5c4b0b" />
+  <Project Path="../Hw11/Hw11.vcxproj" Id="bf39ca0c-340f-4669-a843-e0a71fcf1f58" />
   <Project Path="../TreeHw04/TreeHw04.vcxproj" Id="d6af4c13-bd0a-4cb4-844b-a82ab47d0a2c" />
   <Project Path="TreeHw03.vcxproj" Id="efeb9f84-335b-4aff-9fd9-474b7bf21198" />
 </Solution>
